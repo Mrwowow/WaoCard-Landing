@@ -134,7 +134,7 @@ export default function Markets() {
       </div>
       
       {/* World map overlay (subtle background) */}
-      <div className="absolute inset-0 bg-[url('/world-map-dots.png')] bg-no-repeat bg-center opacity-5 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('/images/world-map-dots.png')] bg-no-repeat bg-center opacity-5 pointer-events-none"></div>
       
       {/* Decorative diagonal line */}
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.1)] to-transparent"></div>

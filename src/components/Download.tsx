@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Download() {
@@ -39,7 +38,7 @@ export default function Download() {
                       </svg>
                     </div>
                     <div>
-                      <div className="text-xs text-[rgba(0,0,0,0.6)]">GET IT ON</div>
+                      <div className="text-xs text-[rgba(f,f,f,0.6)]">GET IT ON</div>
                       <div className="font-bold">Google Play</div>
                     </div>
                   </div>
