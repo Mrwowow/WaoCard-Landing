@@ -34,6 +34,18 @@ export default function CardTypes() {
       features: ["Automatic points tracking", "Reward notifications", "Membership status display", "Digital stamp cards"],
       image: "/loyalty-cards.png"
     },
+    membership: {
+      title: "Membership Cards",
+      description: "Keep all your club, gym, and association memberships organized in your digital wallet for easy access.",
+      features: ["Membership status tracking", "Renewal reminders", "Digital verification", "Membership benefits display"],
+      image: "/membership-cards.png"
+    },
+    id: {
+      title: "ID Cards",
+      description: "Securely store digital versions of your identification cards with selective information sharing capabilities.",
+      features: ["Government ID storage", "Privacy controls", "Biometric verification", "Selective information sharing"],
+      image: "/id-cards.png"
+    },
     event: {
       title: "Event Cards",
       description: "Store tickets for concerts, sports events, movies, and other occasions digitally with easy access when needed.",
@@ -52,6 +64,8 @@ export default function CardTypes() {
     { id: 'payment', label: 'Payment' },
     { id: 'business', label: 'Business' },
     { id: 'loyalty', label: 'Loyalty' },
+    { id: 'membership', label: 'Membership' },
+    { id: 'id', label: 'ID Cards' },
     { id: 'event', label: 'Event' },
     { id: 'access', label: 'Access' },
   ];
@@ -73,21 +87,23 @@ export default function CardTypes() {
         </p>
         
         <div className="flex flex-wrap justify-center gap-2 mb-16">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 relative
-                ${activeTab === tab.id 
-                  ? 'bg-gradient-to-br from-[#FF9500] to-[#E08600] text-white' 
-                  : 'glass-panel text-white hover:border-[rgba(255,149,0,0.3)]'}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {activeTab === tab.id && (
-                <div className="absolute -inset-[2px] bg-[rgba(255,149,0,0.3)] rounded-lg blur-md -z-10"></div>
-              )}
-              {tab.label}
-            </button>
-          ))}
+          <div className="flex flex-wrap justify-center gap-2 p-2 bg-[rgba(0,0,0,0.2)] rounded-xl backdrop-blur-sm w-full max-w-4xl mx-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 relative text-sm md:text-base
+                  ${activeTab === tab.id 
+                    ? 'bg-gradient-to-br from-[#FF9500] to-[#E08600] text-white' 
+                    : 'glass-panel text-white hover:border-[rgba(255,149,0,0.3)]'}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {activeTab === tab.id && (
+                  <div className="absolute -inset-[2px] bg-[rgba(255,149,0,0.3)] rounded-lg blur-md -z-10"></div>
+                )}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
         
         <div className="grid md:grid-cols-2 gap-16 items-center">

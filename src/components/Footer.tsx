@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Image from "next/image";
+
 
 export default function Footer() {
   return (
@@ -7,9 +9,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-[#FF9500] text-white font-bold flex items-center justify-center rounded-lg">
-                W
-              </div>
+              <div className="w-10 h-10 bg-gradient-to-br from-[#000000] to-[#00000] text-white font-bold flex items-center justify-center rounded-lg glow-effect">
+                       <Image 
+                                 src="/logo.svg" 
+                                 alt="WaoBiz Logo" 
+                                 fill
+                                 className="object-contain"
+                               />
+                       </div>
               <span className="text-2xl font-bold text-[#FF9500]">WaoCard</span>
             </div>
             

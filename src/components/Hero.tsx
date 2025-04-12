@@ -73,7 +73,7 @@ export default function Hero() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-[rgba(255,149,0,0.15)] to-transparent rounded-3xl blur-xl opacity-70"></div>
                 <Image 
-                  src="/phone-mockup.png" 
+                  src="/images/phone-mockup.png" 
                   alt="WaoCard App"
                   width={300}
                   height={600}
