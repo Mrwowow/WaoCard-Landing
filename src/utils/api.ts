@@ -23,12 +23,16 @@ export const getAccessToken = async () => {
       body: formdata,
     });
     const result = await response.text();
-    return JSON.parse(result);
+     const data = JSON.parse(result);
+     return data
   } catch (error) {
     console.error(error);
-    return null;
+    return {};
   }
 };
+
+
+
 
 export interface Event {
   id: string;
@@ -54,7 +58,7 @@ export const getEvents = async (accessToken: string): Promise<Event[]> => {
       { ...requestOptions, headers: getEventsHeaders,body: formdata}
     );
     const result = await response.json();
-    return result.data;
+    return result.events || [];
   } catch (error) {
     
     console.error("Error fetching events:", error);
