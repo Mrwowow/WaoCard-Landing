@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from '@/components/Header';
+import EventTickets from '@/components/EventTickets'
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import CardTypes from '@/components/CardTypes';
@@ -42,6 +43,7 @@ export default function Home() {
       
       <main>
         <Hero />
+        <EventTickets />
         <Features />
         <CardTypes />
         <HowItWorks />
