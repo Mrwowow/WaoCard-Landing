@@ -10,7 +10,7 @@ const EventTickets = () => {
         <p className="text-center">
           Carry everything you need to see a show or cheer on your favorite team.
           WaoCard Wallet will even surface your ticket on the day of the event, so
-          you won't miss the opening act or first quarter.
+          you won&apos;t miss the opening act or first quarter.
         </p>
         <Image src="/images/phone-mockup.png" alt="Phone mockup with event ticket" width={300} height={500} />
       </div>
