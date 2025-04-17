@@ -2,7 +2,15 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['via.placeholder.com'],
+    domains: ['waocard.co','via.placeholder.com' ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'waocard.co',
+        port: '',
+        pathname: '/app/upload/**',
+      },
+    ],
   },
 }
 

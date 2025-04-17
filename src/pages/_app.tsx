@@ -1,10 +1,12 @@
+// pages/_app.tsx
 import '../styles/globals.css'
 import Head from 'next/head'
 import type { AppProps } from 'next/app'
+import { AuthProvider } from '../context/AuthContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <AuthProvider>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="WaoCard - The leading digital wallet platform in Africa" />
@@ -14,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>WaoCard - Wao Your World</title>
       </Head>
       <Component {...pageProps} />
-    </>
+    </AuthProvider>
   )
 }
 
