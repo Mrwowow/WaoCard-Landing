@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, JSX } from 'react';
+import { 
+  Wallet, 
+  Smartphone, 
+  Users, 
+  RefreshCw, 
+  CreditCard, 
+  LineChart 
+} from 'lucide-react';
 
 interface Feature {
-  icon: string;
+  icon: JSX.Element;
   title: string;
   description: string;
 }
@@ -13,32 +21,32 @@ export default function Features() {
     // In a real app, you'd fetch this data from an API or import it
     setFeatures([
       {
-        icon: "💳",
+        icon: <Wallet size={24} color="black" />,
         title: "Digital Wallet Management",
         description: "Securely store payment cards, loyalty cards, and digital tickets in one place, with quick access to your most used cards."
       },
       {
-        icon: "📱",
+        icon: <Smartphone size={24} color="black" />,
         title: "Contactless & QR Payments",
         description: "Make quick payments using NFC or QR codes, with offline transaction capability for areas with limited connectivity."
       },
       {
-        icon: "👥",
+        icon: <Users size={24} color="black" />,
         title: "Peer-to-Peer Transfers",
         description: "Send money directly to friends and family via phone number, username, or QR code in multiple currencies."
       },
       {
-        icon: "🔄",
+        icon: <RefreshCw size={24} color="black" />,
         title: "Mobile Money Integration",
         description: "Direct integration with popular mobile money services like M-Pesa, Orange Money, and MTN Mobile Money."
       },
       {
-        icon: "🪪",
+        icon: <CreditCard size={24} color="black" />,
         title: "Digital ID Management",
         description: "Secure storage for digital versions of identification documents with selective information sharing."
       },
       {
-        icon: "📊",
+        icon: <LineChart size={24} color="black" />,
         title: "Transaction History",
         description: "Comprehensive record of all financial activities with searchable and filterable transaction list."
       }

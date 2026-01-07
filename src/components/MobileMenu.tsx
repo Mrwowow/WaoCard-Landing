@@ -81,6 +81,12 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Markets
             </span>
           </Link>
+          <Link href="/events" onClick={onClose}>
+            <span className="text-xl font-medium block py-4 border-b border-[rgba(255,255,255,0.1)] text-white hover:text-[#FF9500] transition-colors flex items-center">
+              <span className="w-2 h-2 bg-[#FF9500] rounded-full mr-3"></span>
+              Events
+            </span>
+          </Link>
         </nav>
         
         <div className="flex flex-col items-center">

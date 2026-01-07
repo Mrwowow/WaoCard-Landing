@@ -9,14 +9,9 @@ import QRCode from 'react-qr-code';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileMenu from '@/components/MobileMenu';
-import { getAccessToken } from '@/utils/api';
+import GoogleMap from '@/components/GoogleMap';
+import { getAccessToken, getEventById, getEvents, getEventAttendees, getSimilarEvents } from '@/utils/api';
 import { Event, EventUser } from '@/types/event';
-
-interface GoogleMapProps {
-  location: string;
-  lat: number;
-  lng: number;
-}
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -44,6 +39,93 @@ const getImageUrl = (imageUrl: string): string => {
   }
   return imageUrl;
 };
+
+// Futuristic Event Card component - similar to the one on the events page
+const FuturisticEventCard = ({ event }: { event: Event }) => {
+  // Parse dates for formatting
+  let startDate: Date;
+  try {
+    startDate = new Date(
+      event.start_date.includes('/') 
+        ? `20${event.start_date.split('/')[2]}-${event.start_date.split('/')[0]}-${event.start_date.split('/')[1]}` 
+        : event.start_date
+    );
+    if (isNaN(startDate.getTime())) {
+      startDate = new Date(); // Fallback to current date
+    }
+  } catch {
+    startDate = new Date(); // Fallback to current date
+  }
+  
+  return (
+    <div className="glass-panel p-4 relative group overflow-hidden">
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
+        <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
+      </div>
+      
+      <Link href={`/events/${event.id}`}>
+        <div className="relative overflow-hidden rounded-lg mb-4 aspect-video">
+          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
+          <Image
+            src={getImageUrl(event.cover)}
+            alt={event.name}
+            width={300}
+            height={200}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute bottom-2 left-2 z-20 bg-[rgba(255,149,0,0.9)] text-black text-xs px-2 py-1 rounded-md font-medium">
+            {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </div>
+        </div>
+        
+        <h3 className="text-lg font-bold mb-2 group-hover:text-[#FF9500] transition-colors">{event.name}</h3>
+      </Link>
+
+      <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">{event.description?.slice(0, 80) || ''}...</p>
+      
+      <div className="flex items-center justify-between">
+        <div className="text-[rgba(255,255,255,0.6)] text-xs flex items-center">
+          <span className="inline-block w-1 h-1 rounded-full bg-[#FF9500] mr-1"></span>
+          {event.start_time}
+        </div>
+        
+        <div className="flex gap-2">
+          <span className="text-xs bg-[rgba(255,255,255,0.05)] px-2 py-1 rounded border border-[rgba(255,255,255,0.1)]">
+            {event.going_count || '0'} Going
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper functions for date formatting
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function formatFullDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+}
 
 // CountDown Component
 const CountDownTimer = ({ targetDate }: { targetDate: Date }) => {
@@ -109,81 +191,48 @@ const CountDownTimer = ({ targetDate }: { targetDate: Date }) => {
   );
 };
 
-// Map Component placeholder - in a real app, this would use Google Maps API
-const EventMap = ({ location, lat, lng }: GoogleMapProps) => {
-  return (
-    <div className="glass-panel overflow-hidden rounded-lg p-6 h-full relative">
-      {/* Corner accents */}
-      <div className="absolute top-0 right-0 w-12 h-12">
-        <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
-        <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
-      </div>
-      
-      <h3 className="text-xl font-bold mb-4 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#FF9500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        Location
-      </h3>
-      
-      <p className="text-[rgba(255,255,255,0.7)] mb-4">{location}</p>
-      
-      <div className="relative h-60 rounded-lg overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center bg-[url('/map-placeholder.png')] bg-cover bg-center bg-no-repeat">
-          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-          <div className="relative z-10 text-center p-4">
-            <p className="text-white mb-2">Map would display here</p>
-            <p className="text-sm text-[rgba(255,255,255,0.7)]">Coordinates: {lat}, {lng}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 text-center">
-        <a 
-          href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block px-4 py-2 bg-[rgba(255,149,0,0.2)] rounded-md text-[#FF9500] text-sm hover:bg-[rgba(255,149,0,0.3)] transition-colors"
-        >
-          Open in Google Maps
-        </a>
-      </div>
-    </div>
-  );
-};
+// Map Component declaration is removed since we're importing the real component
 
 interface EventDetailPageProps {
-  event: Event;
+  event: Event | null;
+  error?: string | null;
+  debug?: string; // For debugging purposes
 }
 
-const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
+const EventDetailPage: React.FC<EventDetailPageProps> = ({ event, error, debug }) => {
   const { isAuthenticated, login } = useAuth();
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [shareMenuOpen, setShareMenuOpen] = useState<boolean>(false);
   const [goingStatus, setGoingStatus] = useState<string>('none'); // 'none', 'going', 'interested'
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [attendees] = useState<EventUser[]>([
-    {
-      name: "John Doe",
-      avatar: "/avatars/user1.png",
-      url: "#",
-      user_id: "2"
-    },
-    {
-      name: "Sarah Johnson",
-      avatar: "/avatars/user2.png",
-      url: "#",
-      user_id: "3"
-    },
-    {
-      name: "Michael Smith",
-      avatar: "/avatars/user3.png",
-      url: "#",
-      user_id: "4"
+  const [attendees, setAttendees] = useState<EventUser[]>([]);
+  const [attendeesLoading, setAttendeesLoading] = useState<boolean>(true);
+  const [similarEvents, setSimilarEvents] = useState<Event[]>([]);
+  const [similarEventsLoading, setSimilarEventsLoading] = useState<boolean>(true);
+
+  // Convert date format helper
+  const convertDateFormat = (dateStr: string): string => {
+    // Handle both ISO and MM/DD/YY formats
+    if (!dateStr) return "";
+    
+    // If already in ISO format, return as is
+    if (dateStr.includes('-')) return dateStr;
+    
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return dateStr; // Return original if can't parse
+    
+    const month = parts[0].padStart(2, '0');
+    const day = parts[1].padStart(2, '0');
+    let year = parts[2];
+    
+    // Add century if needed
+    if (year.length === 2) {
+      year = `20${year}`;
     }
-  ]);
+    
+    return `${year}-${month}-${day}`;
+  };
 
   // Set initial going status based on event data
   useEffect(() => {
@@ -193,6 +242,49 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
       } else if (event.is_interested) {
         setGoingStatus('interested');
       }
+      
+      // Fetch attendees and similar events when event is loaded
+      const fetchEventData = async () => {
+        try {
+          setAttendeesLoading(true);
+          setSimilarEventsLoading(true);
+          
+          try {
+            // Get access token
+            const tokenResponse = await getAccessToken();
+            
+            if (tokenResponse && tokenResponse.access_token) {
+              const accessToken = tokenResponse.access_token;
+              
+              // Try to fetch attendees
+              try {
+                const attendeeData = await getEventAttendees(accessToken, event.id);
+                setAttendees(attendeeData);
+              } catch (attendeeError) {
+                console.error("Error fetching attendees:", attendeeError);
+              }
+              
+              // Try to fetch similar events
+              try {
+                const similarEventsData = await getSimilarEvents(accessToken, event.id);
+                setSimilarEvents(similarEventsData);
+              } catch (eventsError) {
+                console.error("Error fetching similar events:", eventsError);
+              }
+            }
+          } catch (tokenError) {
+            console.error("Error getting access token:", tokenError);
+          }
+        } catch (error) {
+          console.error("Error fetching event data:", error);
+        } finally {
+          // Ensure loading states are cleared regardless of success/failure
+          setAttendeesLoading(false);
+          setSimilarEventsLoading(false);
+        }
+      };
+      
+      fetchEventData();
     }
   }, [event]);
 
@@ -205,13 +297,27 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // If event is not available
-  if (!event) {
+  // If event is not available or there's an error
+  if (!event || error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="glass-panel p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Event not found</h1>
-          <p className="text-[rgba(255,255,255,0.7)] mb-6">This event may have been removed or the URL is incorrect.</p>
+        <div className="glass-panel p-8 text-center max-w-2xl">
+          <h1 className="text-2xl font-bold mb-4">{error || "Event not found"}</h1>
+          <p className="text-[rgba(255,255,255,0.7)] mb-6">
+            {error 
+              ? "There was a problem fetching this event. Please try again later." 
+              : "This event may have been removed or the URL is incorrect."}
+          </p>
+          
+          {debug && (
+            <div className="mb-6 text-left">
+              <h3 className="text-lg font-bold mb-2 text-[#FF9500]">Debug Information</h3>
+              <div className="bg-black/30 p-3 rounded overflow-auto max-h-40 text-xs">
+                <pre>{debug}</pre>
+              </div>
+            </div>
+          )}
+          
           <Link href="/events">
             <span className="btn btn-primary">Browse Events</span>
           </Link>
@@ -221,8 +327,37 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
   }
 
   // Parse dates
-  const startDate = new Date(convertDateFormat(event.start_date) + 'T' + event.start_time);
-  const endDate = new Date(convertDateFormat(event.end_date) + 'T' + event.end_time);
+  let startDate: Date;
+  let endDate: Date;
+  
+  try {
+    // Try to parse the date safely
+    const formattedStartDate = convertDateFormat(event.start_date);
+    startDate = new Date(`${formattedStartDate}T${event.start_time || '00:00:00'}`);
+    
+    // Check if date is valid, if not use current date
+    if (isNaN(startDate.getTime())) {
+      console.error('Invalid start date format:', event.start_date, event.start_time);
+      startDate = new Date(); // Fallback to current date
+    }
+    
+    // Handle end date
+    if (event.end_date && event.end_time) {
+      const formattedEndDate = convertDateFormat(event.end_date);
+      endDate = new Date(`${formattedEndDate}T${event.end_time}`);
+      
+      // Check if date is valid
+      if (isNaN(endDate.getTime())) {
+        endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Default to 1 hour later
+      }
+    } else {
+      endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Default to 1 hour later
+    }
+  } catch (error) {
+    console.error('Error parsing dates:', error);
+    startDate = new Date();
+    endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+  }
 
   // Function to handle going/interested buttons
   const handleAttendance = async (status: string) => {
@@ -323,7 +458,8 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
         onClose={() => setMobileMenuOpen(false)} 
       />
       
-      <main className="pt-24 pb-20 relative z-10">
+      <main className="pt-24 pb-56 relative z-10">
+        {/* Greatly increased bottom padding to prevent footer overlap */}
         {/* Event Hero Section */}
         <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] mb-8">
           {/* Cover image with gradient overlay */}
@@ -352,6 +488,9 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
               
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-white">
                 {event.name}
+                {debug && (
+                  <span className="ml-2 text-sm bg-orange-800 text-white px-2 py-1 rounded-md align-middle">Demo Mode</span>
+                )}
               </h1>
               
               <div className="flex flex-wrap items-center gap-6">
@@ -389,7 +528,8 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
         
         {/* Event Content */}
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-28">
+            {/* Greatly increased margin bottom to ensure space between grid and related events section */}
             {/* Left column - Event details */}
             <div className="lg:col-span-2">
               {/* Action buttons */}
@@ -544,17 +684,12 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
                   <p className="text-[rgba(255,255,255,0.8)]">{event.description}</p>
                   
                   {/* This would be expanded with more details in a real application */}
-                  <p className="text-[rgba(255,255,255,0.8)] mt-4">
-                    Join us for this special celebration! There will be cake, games, and plenty of fun activities for everyone.
-                  </p>
-                  
-                  <h4 className="text-white mt-6 text-lg font-medium">What to expect:</h4>
-                  <ul className="text-[rgba(255,255,255,0.8)]">
-                    <li>Birthday cake and refreshments</li>
-                    <li>Party games and entertainment</li>
-                    <li>Gift opening ceremony</li>
-                    <li>Photo opportunities</li>
-                  </ul>
+                  {event.content && (
+                    <div 
+                      className="text-[rgba(255,255,255,0.8)] mt-4"
+                      dangerouslySetInnerHTML={{ __html: event.content }}
+                    />
+                  )}
                 </div>
               </div>
               
@@ -568,10 +703,15 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
                   <span className="ml-2 text-sm text-[rgba(255,255,255,0.6)]">{attendees.length}</span>
                 </h3>
                 
-                {attendees.length > 0 ? (
+                {attendeesLoading ? (
+                  <div className="flex justify-center items-center h-36">
+                    <div className="h-8 w-8 border-4 border-[rgba(255,149,0,0.5)] border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <p className="text-[rgba(255,255,255,0.7)]">Loading attendees...</p>
+                  </div>
+                ) : attendees.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {attendees.map((attendee, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-[rgba(255,255,255,0.03)] rounded-lg">
+                      <div key={attendee.user_id || index} className="flex items-center gap-3 p-3 bg-[rgba(255,255,255,0.03)] rounded-lg">
                         <div className="w-10 h-10 rounded-full overflow-hidden relative">
                           <Image
                             src={getImageUrl(attendee.avatar)}
@@ -583,7 +723,7 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
                         </div>
                         <div>
                           <a 
-                            href={attendee.url}
+                            href={attendee.url || '#'}
                             className="text-white hover:text-[#FF9500] transition-colors font-medium"
                           >
                             {attendee.name}
@@ -608,91 +748,84 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
             </div>
             
             {/* Right column - Event Details */}
-            <div className="lg:col-span-1 space-y-8">
-              {/* Event Details Card */}
-              <div className="glass-panel p-6">
-                <h3 className="text-xl font-bold mb-6 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#FF9500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="lg:col-span-1">
+               {/* Compact Event Details Card */}
+               <div className="glass-panel p-4 mb-8">
+                <h3 className="text-lg font-bold mb-3 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-[#FF9500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Event Details
                 </h3>
                 
-                <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[rgba(255,255,255,0.7)] text-sm">Date & Time</h4>
-                      <p className="text-white">{formatFullDate(startDate)}</p>
-                      <p className="text-white">{formatTime(startDate)} - {formatTime(endDate)}</p>
+                      <h4 className="text-[rgba(255,255,255,0.7)] text-xs">Date & Time</h4>
+                      <p className="text-white text-sm">{formatFullDate(startDate)}</p>
+                      <p className="text-white text-sm">{formatTime(startDate)} - {formatTime(endDate)}</p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[rgba(255,255,255,0.7)] text-sm">Location</h4>
-                      <p className="text-white">{event.location}</p>
+                      <h4 className="text-[rgba(255,255,255,0.7)] text-xs">Location</h4>
+                      <p className="text-white text-sm">{event.location}</p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[rgba(255,255,255,0.7)] text-sm">Ticket Price</h4>
-                      <p className="text-white">Free Admission</p>
+                      <h4 className="text-[rgba(255,255,255,0.7)] text-xs">Ticket Price</h4>
+                      <p className="text-white text-sm">{event.ticket_price ? `${event.ticket_price}` : 'Free Admission'}</p>
                     </div>
                   </div>
                 </div>
                 
                 {/* Add to calendar options */}
-                <div className="mt-8">
-                  <button className="w-full btn btn-primary mb-3 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add to WaoCard
-                  </button>
-                  
-                  <div className="text-center">
-                    <button 
-                      className="text-[rgba(255,255,255,0.7)] hover:text-[#FF9500] transition-colors text-sm flex items-center gap-1 mx-auto"
-                      onClick={() => {
-                        // In a real app, open calendar options dropdown
-                        alert('Calendar options would open here');
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Add to calendar
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Location Map */}
-              <EventMap 
-                location={event.location}
-                lat={parseFloat(event.user_data.lat || "0")}
-                lng={parseFloat(event.user_data.lng || "0")}
-              />
-              
-              {/* Organizer Info */}
-              <div className="glass-panel p-6 relative z-10">
+                <div className="mt-4">
+                <button className="w-full btn btn-primary py-2 mb-2 flex items-center justify-center gap-2 text-sm">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+  </svg>
+  Add to WaoCard
+</button>
+
+<div className="text-center">
+  <button 
+    className="text-[rgba(255,255,255,0.7)] hover:text-[#FF9500] transition-colors text-xs flex items-center gap-1 mx-auto"
+    onClick={() => {
+      // In a real app, open calendar options dropdown
+      alert('Calendar options would open here');
+    }}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    Add to calendar
+  </button>
+</div>
+</div>
+            </div>
+              {/* Organizer and QR Code in one panel */}
+              <div className="glass-panel p-6 relative z-10 mb-8">
+                {/* Organizer Info */}
                 <h3 className="text-xl font-bold mb-6 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#FF9500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -723,231 +856,191 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({ event }) => {
                 <div className="h-[1px] w-full bg-[rgba(255,255,255,0.1)] my-4"></div>
                 
                 <button 
-                  className="w-full py-2 text-center text-[#FF9500] hover:text-white hover:bg-[rgba(255,149,0,0.2)] transition-colors rounded-md"
+                  className="w-full py-2 text-center text-[#FF9500] hover:text-white hover:bg-[rgba(255,149,0,0.2)] transition-colors rounded-md mb-6"
                   onClick={() => isAuthenticated ? alert('Contact form would open here') : login()}
                 >
                   Contact Organizer
                 </button>
-              </div>
-              
-              {/* QR Code for Event */}
-              <div className="glass-panel p-6 text-center relative z-10">
-                <h3 className="text-xl font-bold mb-4">Event QR Code</h3>
-                <p className="text-[rgba(255,255,255,0.7)] text-sm mb-6">Scan with WaoCard app for quick access</p>
                 
-                <div className="w-40 h-40 mx-auto bg-white p-2 rounded-md">
-                  <QRCode
-                    value={`https://waocard.co/app/events/${event.id}`}
-                    size={144}
-                    bgColor="#FFFFFF"
-                    fgColor="#000000"
-                    level="H"
-                  />
+                {/* QR Code */}
+                <div className="text-center mt-8 pt-6 border-t border-[rgba(255,255,255,0.1)]">
+                  <h4 className="text-lg font-bold mb-3">Event QR Code</h4>
+                  <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">Scan with WaoCard app for quick access</p>
+                  
+                  <div className="w-32 h-32 mx-auto bg-white p-2 rounded-md">
+                    <QRCode
+                      value={`https://waocard.co/app/events/${event.id}`}
+                      size={112}
+                      bgColor="#FFFFFF"
+                      fgColor="#000000"
+                      level="H"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+
+              {/* Location Map */}
+              <GoogleMap 
+                location={event.location || "No location specified"}
+                lat={(event.lat ? parseFloat(event.lat) : event.user_data?.lat ? parseFloat(event.user_data.lat) : 0)}
+                lng={(event.lng ? parseFloat(event.lng) : event.user_data?.lng ? parseFloat(event.user_data.lng) : 0)}
+                className="mb-8"
+              />
+              
+             
           </div>
           
-          {/* Related Events Section */}
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-8 relative inline-flex items-center">
+          {/* Related Events Section - More compact */}
+          <div className="mb-28">
+            <h2 className="text-lg font-bold mb-6 relative inline-flex items-center">
               Similar Events
-              <span className="ml-3 w-12 h-[1px] bg-gradient-to-r from-[rgba(255,149,0,0.7)] to-transparent"></span>
+              <span className="ml-3 w-10 h-[1px] bg-gradient-to-r from-[rgba(255,149,0,0.7)] to-transparent"></span>
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Placeholder related events would go here - using the same card style */}
-              <div className="glass-panel p-4 relative group overflow-hidden">
-                <div className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                </div>
-                
-                <div className="relative overflow-hidden rounded-lg mb-4 aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
-                  <Image
-                    src="/event-placeholder.png"
-                    alt="Related Event"
-                    width={300}
-                    height={200}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute bottom-2 left-2 z-20 bg-[rgba(255,149,0,0.9)] text-black text-xs px-2 py-1 rounded-md font-medium">
-                    Aug 15
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#FF9500] transition-colors">Children&apos;s Birthday Party</h3>
-                <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">Join us for another fun birthday celebration with games and cake!</p>
+            {similarEventsLoading ? (
+              <div className="flex justify-center items-center h-36">
+                <div className="h-8 w-8 border-4 border-[rgba(255,149,0,0.5)] border-t-transparent rounded-full animate-spin mr-2"></div>
+                <p className="text-[rgba(255,255,255,0.7)]">Loading similar events...</p>
               </div>
-              
-              <div className="glass-panel p-4 relative group overflow-hidden">
-                <div className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                </div>
-                
-                <div className="relative overflow-hidden rounded-lg mb-4 aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
-                  <Image
-                    src="/event-placeholder.png"
-                    alt="Related Event"
-                    width={300}
-                    height={200}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute bottom-2 left-2 z-20 bg-[rgba(255,149,0,0.9)] text-black text-xs px-2 py-1 rounded-md font-medium">
-                    Aug 22
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#FF9500] transition-colors">Family Fun Day</h3>
-                <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">A day filled with activities for the whole family to enjoy together.</p>
+            ) : similarEvents.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {similarEvents.map((similarEvent) => (
+                  <FuturisticEventCard key={similarEvent.id} event={similarEvent} />
+                ))}
               </div>
-              
-              <div className="glass-panel p-4 relative group overflow-hidden">
-                <div className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                </div>
-                
-                <div className="relative overflow-hidden rounded-lg mb-4 aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
-                  <Image
-                    src="/event-placeholder.png"
-                    alt="Related Event"
-                    width={300}
-                    height={200}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute bottom-2 left-2 z-20 bg-[rgba(255,149,0,0.9)] text-black text-xs px-2 py-1 rounded-md font-medium">
-                    Sep 5
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#FF9500] transition-colors">Kids Play Day</h3>
-                <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">Special day for children with games, educational activities and more.</p>
+            ) : (
+              <div className="glass-panel p-6 text-center">
+                <p className="text-[rgba(255,255,255,0.7)]">No similar events found at this time.</p>
               </div>
-              
-              <div className="glass-panel p-4 relative group overflow-hidden">
-                <div className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[rgba(255,149,0,0.5)] to-transparent"></div>
-                </div>
-                
-                <div className="relative overflow-hidden rounded-lg mb-4 aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
-                  <Image
-                    src="/event-placeholder.png"
-                    alt="Related Event"
-                    width={300}
-                    height={200}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute bottom-2 left-2 z-20 bg-[rgba(255,149,0,0.9)] text-black text-xs px-2 py-1 rounded-md font-medium">
-                    Sep 12
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#FF9500] transition-colors">Community Celebration</h3>
-                <p className="text-[rgba(255,255,255,0.7)] text-sm mb-4">Join the neighborhood for food, music, and celebration of our community.</p>
-              </div>
-            </div>
+            )}
           </div>
+        </div>
         </div>
       </main>
       
-      <Footer />
+      <div className="mt-32">
+        <Footer />
+      </div>
     </div>
   );
 };
 
-// Date formatting helper functions
-function convertDateFormat(dateStr: string): string {
-  // Convert from "MM/DD/YY" to "YYYY-MM-DD"
-  if (!dateStr) return "";
-  
-  const parts = dateStr.split('/');
-  if (parts.length !== 3) return "";
-  
-  const month = parts[0];
-  const day = parts[1];
-  const year = `20${parts[2]}`; // Assuming YY format for year
-  
-  return `${year}-${month}-${day}`;
-}
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-}
-
-function formatFullDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-}
-
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
-}
-
-// Define the getServerSideProps function to fetch event data
 export async function getServerSideProps(context: {params: {id: string}}) {
   const { id } = context.params;
   
-  try {
-    // Get access token - we call this but don't need to use the token for the demo data
-    await getAccessToken();
+  // Generate a sample event for development or when API is unavailable
+  const createSampleEvent = () => {
+    const sampleDate = new Date();
+    sampleDate.setDate(sampleDate.getDate() + 7); // Event 7 days from now
     
-    // In a production environment, you would fetch the specific event from API
-    // For demo purposes, using sample data
-    const sampleEventData = {
-      "id": id || "1",
-      "name": "Princess Victory 3rd Birthday",
-      "location": "Lagos Nigeria",
-      "description": "Princess Victory 3rd Birthday! Join us for this special celebration with cake, games, and fun activities for all ages.",
-      "start_date": "07/10/25",
-      "start_time": "16:28:00",
-      "end_date": "07/10/25",
-      "end_time": "17:00:00",
-      "poster_id": "1",
-      "cover": "https://waocard.co/app/upload/photos/2024/11/8eys4xjCQ6XCb1KtdIF5_10_94a2df85ff39b6849b45d837ee90c2b3_cover.jpg",
-      "user_data": {
-        "user_id": "1",
-        "name": "MORGAN VICTOR",
-        "avatar": "https://waocard.co/app/upload/photos/d-avatar.jpg?cache=0",
-        "url": "https://waocard.co/app/admin",
-        "is_verified": 1,
-        "lat": "9.0570752",
-        "lng": "7.4514432"
+    const dateStr = `${sampleDate.getFullYear()}-${String(sampleDate.getMonth() + 1).padStart(2, '0')}-${String(sampleDate.getDate()).padStart(2, '0')}`;
+    const timeStr = "18:00:00";
+    
+    const sampleEvent: Event = {
+      id: id,
+      name: `Demo Event #${id}`,
+      description: "This is a sample event description for development. In production, this would show actual event details from the API.",
+      location: "San Francisco, CA",
+      start_date: dateStr,
+      start_time: timeStr,
+      end_date: dateStr,
+      end_time: "20:00:00",
+      poster_id: "1",
+      cover: "/event-placeholder.png",
+      user_data: {
+        user_id: "sample-organizer",
+        name: "Demo Organizer",
+        avatar: "/event-placeholder.png",
+        url: "#",
+        is_verified: 1
       },
-      "url": `https://waocard.co/app/events/${id}/`,
-      "is_going": false,
-      "is_interested": false,
-      "going_count": "0",
-      "interested_count": "0"
+      url: `/events/${id}`,
+      is_going: false,
+      is_interested: false,
+      going_count: "42",
+      interested_count: "89"
     };
     
+    return sampleEvent;
+  };
+  
+  try {
+    // Get access token from the API utility
+    let event = null;
+    let allEvents = [];
+    let apiError = false;
+    
+    try {
+      const tokenResponse = await getAccessToken();
+      
+      if (tokenResponse && tokenResponse.access_token) {
+        const accessToken = tokenResponse.access_token;
+        
+        try {
+          // First try to get the event by ID
+          event = await getEventById(accessToken, id);
+        } catch (e) {
+          console.error("Error fetching event by ID:", e);
+        }
+        
+        try {
+          // Get all events
+          allEvents = await getEvents(accessToken);
+          
+          // If event wasn't found by ID, try to find it in the full list
+          if (!event && allEvents.length > 0) {
+            event = allEvents.find(e => e.id === id);
+          }
+        } catch (e) {
+          console.error("Error fetching all events:", e);
+        }
+      }
+    } catch (tokenError) {
+      console.error("Error getting access token:", tokenError);
+      apiError = true;
+    }
+    
+    // If we found the event from the API, return it
+    if (event) {
+      return {
+        props: {
+          event,
+          error: null
+        }
+      };
+    }
+    
+    // If API failed, return a sample event for development
+    if (apiError) {
+      const sampleEvent = createSampleEvent();
+      return {
+        props: {
+          event: sampleEvent,
+          error: null,
+          debug: "Using sample event data because the API is unavailable."
+        }
+      };
+    }
+    
+    // If we couldn't find the event and API worked, return an error
     return {
       props: {
-        event: sampleEventData
+        error: 'Event not found. The event may have been removed or the URL is incorrect.',
+        event: null,
+        debug: `Attempted to fetch event ID: ${id}`
       }
     };
   } catch (error) {
-    console.error('Error fetching event:', error);
+    console.error('Error in getServerSideProps:', error);
+    
+    // Last resort fallback - return a sample event even if everything else fails
+    const sampleEvent = createSampleEvent();
     return {
-      notFound: true
+      props: {
+        event: sampleEvent,
+        error: null,
+        debug: "Using sample event data due to unexpected error."
+      }
     };
   }
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CreditCard, ShieldCheck, Wifi, User } from 'lucide-react';
 
 export default function Download() {
   return (
@@ -62,17 +63,17 @@ export default function Download() {
             
             <div className="flex items-center gap-5">
               <div className="flex -space-x-3">
-                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-orange-500 ring-2 ring-black">
-                  👨🏾
+                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-[#FF9500] ring-2 ring-black">
+                  <User className="w-5 h-5" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-orange-500 ring-2 ring-black">
-                  👩🏾
+                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-[#FF9500] ring-2 ring-black">
+                  <User className="w-5 h-5" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-orange-500 ring-2 ring-black">
-                  👩🏽
+                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-[#FF9500] ring-2 ring-black">
+                  <User className="w-5 h-5" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-orange-500 ring-2 ring-black">
-                  👨🏿
+                <div className="w-10 h-10 rounded-full bg-[rgba(255,149,0,0.15)] border border-[rgba(255,149,0,0.3)] flex items-center justify-center text-[#FF9500] ring-2 ring-black">
+                  <User className="w-5 h-5" />
                 </div>
               </div>
               <div>
@@ -108,23 +109,29 @@ export default function Download() {
               
               <div className="grid gap-6 mb-10">
                 <div className="flex gap-4 items-center p-4 bg-[rgba(255,255,255,0.03)] rounded-xl border border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,149,0,0.2)] transition-colors group">
-                  <div className="text-2xl text-[#FF9500] group-hover:scale-110 transition-transform duration-300">💳</div>
+                  <div className="text-[#FF9500] group-hover:scale-110 transition-transform duration-300">
+                    <CreditCard className="w-6 h-6" />
+                  </div>
                   <div>
                     <div className="font-medium text-white">All cards in one place</div>
                     <div className="text-sm text-[rgba(255,255,255,0.6)]">Payment, loyalty, access & more</div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4 items-center p-4 bg-[rgba(255,255,255,0.03)] rounded-xl border border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,149,0,0.2)] transition-colors group">
-                  <div className="text-2xl text-[#FF9500] group-hover:scale-110 transition-transform duration-300">🔐</div>
+                  <div className="text-[#FF9500] group-hover:scale-110 transition-transform duration-300">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
                   <div>
                     <div className="font-medium text-white">Bank-level security</div>
                     <div className="text-sm text-[rgba(255,255,255,0.6)]">Your data is always protected</div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4 items-center p-4 bg-[rgba(255,255,255,0.03)] rounded-xl border border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,149,0,0.2)] transition-colors group">
-                  <div className="text-2xl text-[#FF9500] group-hover:scale-110 transition-transform duration-300">📶</div>
+                  <div className="text-[#FF9500] group-hover:scale-110 transition-transform duration-300">
+                    <Wifi className="w-6 h-6" />
+                  </div>
                   <div>
                     <div className="font-medium text-white">Works offline</div>
                     <div className="text-sm text-[rgba(255,255,255,0.6)]">No internet? No problem!</div>

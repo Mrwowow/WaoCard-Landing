@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Briefcase, BarChart3, Store, Lock, CreditCard, Building2, Gift, Star, Check } from 'lucide-react';
 
 interface Benefit {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }
@@ -11,7 +12,7 @@ interface Benefit {
 interface BusinessTool {
   id: string;
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   description: string;
   features: string[];
 }
@@ -21,22 +22,22 @@ export default function Business() {
   
   const benefits: Benefit[] = [
     {
-      icon: "💼",
+      icon: <Briefcase className="w-6 h-6" />,
       title: "Business Card Management",
       description: "Issue and control corporate cards for your employees with spending limits and restrictions."
     },
     {
-      icon: "📊",
+      icon: <BarChart3 className="w-6 h-6" />,
       title: "Expense Tracking",
       description: "Automated expense categorization and reporting for simpler accounting and reconciliation."
     },
     {
-      icon: "🏪",
+      icon: <Store className="w-6 h-6" />,
       title: "Merchant Services",
       description: "Accept WaoCard payments in your business with low transaction fees and fast settlement."
     },
     {
-      icon: "🔒",
+      icon: <Lock className="w-6 h-6" />,
       title: "Secure Transactions",
       description: "Enterprise-grade security with fraud protection and real-time transaction monitoring."
     }
@@ -46,7 +47,7 @@ export default function Business() {
     {
       id: 'expense',
       name: 'Expense Management',
-      icon: '💳',
+      icon: <CreditCard className="w-6 h-6" />,
       description: 'Comprehensive corporate card and expense management system for businesses of all sizes',
       features: [
         'Issue virtual and physical cards to employees',
@@ -58,7 +59,7 @@ export default function Business() {
     {
       id: 'store',
       name: 'Store Cards',
-      icon: '🏬',
+      icon: <Building2 className="w-6 h-6" />,
       description: 'Create branded store cards that your customers can add to their WaoCard wallet',
       features: [
         'Customizable branded card design',
@@ -70,7 +71,7 @@ export default function Business() {
     {
       id: 'gift',
       name: 'Gift Cards',
-      icon: '🎁',
+      icon: <Gift className="w-6 h-6" />,
       description: 'Digital gift card solution that simplifies giving and receiving',
       features: [
         'Customizable gift card templates',
@@ -82,7 +83,7 @@ export default function Business() {
     {
       id: 'loyalty',
       name: 'Loyalty Programs',
-      icon: '⭐',
+      icon: <Star className="w-6 h-6" />,
       description: 'Build customer relationships with a powerful digital loyalty program',
       features: [
         'Points-based or tiered reward systems',
@@ -208,8 +209,8 @@ export default function Business() {
               <div className="grid md:grid-cols-2 gap-4">
                 {activeTool?.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3 bg-[rgba(255,255,255,0.03)] p-4 rounded-lg border border-[rgba(255,255,255,0.05)]">
-                    <div className="w-5 h-5 rounded-full bg-[rgba(255,149,0,0.2)] text-[#FF9500] flex items-center justify-center flex-shrink-0 mt-0.5 text-xs">
-                      ✓
+                    <div className="w-5 h-5 rounded-full bg-[rgba(255,149,0,0.2)] text-[#FF9500] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3" />
                     </div>
                     <span className="text-[rgba(255,255,255,0.9)]">{feature}</span>
                   </div>

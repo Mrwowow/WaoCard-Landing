@@ -56,11 +56,11 @@ export default function Footer() {
               <span className="absolute bottom-0 left-0 w-8 h-0.5 bg-[#FF9500]"></span>
             </h4>
             <ul className="space-y-3">
-              <li><Link href="#features"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">Features</span></Link></li>
-              <li><Link href="#cards"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">Card Types</span></Link></li>
-              <li><Link href="#business"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">Business Solutions</span></Link></li>
-              <li><Link href="#markets"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">Markets</span></Link></li>
-              <li><Link href="#pricing"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">Pricing</span></Link></li>
+              <li><Link href="#features"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">WaoEstate</span></Link></li>
+              <li><Link href="#cards"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">WaoEvents</span></Link></li>
+              <li><Link href="#business"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">WaoBiz</span></Link></li>
+              <li><Link href="#markets"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">WaoMembership</span></Link></li>
+              <li><Link href="#pricing"><span className="text-gray-400 hover:text-[#FF9500] transition-colors">WaoGift</span></Link></li>
             </ul>
           </div>
           

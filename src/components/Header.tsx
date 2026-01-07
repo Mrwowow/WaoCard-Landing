@@ -37,6 +37,9 @@ export default function Header({ scrolled, toggleMobileMenu }: HeaderProps) {
           <Link href="#markets">
             <span className="font-medium text-white hover:text-[#FF9500] transition-colors duration-300 cursor-pointer opacity-90 hover:opacity-100">Markets</span>
           </Link>
+          <Link href="/events">
+            <span className="font-medium text-white hover:text-[#FF9500] transition-colors duration-300 cursor-pointer opacity-90 hover:opacity-100">Events</span>
+          </Link>
           <Link href="#download">
             <span className="btn btn-primary">Get Started</span>
           </Link>

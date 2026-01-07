@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { CreditCard, IdCard, KeyRound, ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -29,21 +30,21 @@ export default function Hero() {
             <div className="flex flex-wrap gap-8 mb-12">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                  💳
+                  <CreditCard className="w-6 h-6" />
                 </div>
                 <span className="font-medium">Payment</span>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                  🪪
+                  <IdCard className="w-6 h-6" />
                 </div>
                 <span className="font-medium">Identity</span>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[rgba(255,149,0,0.15)] flex items-center justify-center text-[#FF9500]">
-                  🔑
+                  <KeyRound className="w-6 h-6" />
                 </div>
                 <span className="font-medium">Access</span>
               </div>
@@ -59,7 +60,7 @@ export default function Hero() {
               <Link href="#features">
                 <span className="btn btn-secondary flex items-center gap-2">
                   <span>Learn More</span>
-                  <span>→</span>
+                  <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
             </div>
@@ -73,7 +74,7 @@ export default function Hero() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-[rgba(255,149,0,0.15)] to-transparent rounded-3xl blur-xl opacity-70"></div>
                 <Image 
-                  src="/images/phone-mockup.png" 
+                  src="/images/phone-mockup.webp" 
                   alt="WaoCard App"
                   width={300}
                   height={600}
