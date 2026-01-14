@@ -75,10 +75,16 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Business
             </span>
           </Link>
-          <Link href="#markets" onClick={onClose}>
+          <Link href="/store-cards" onClick={onClose}>
             <span className="text-xl font-medium block py-4 border-b border-[rgba(255,255,255,0.1)] text-white hover:text-[#FF9500] transition-colors flex items-center">
               <span className="w-2 h-2 bg-[#FF9500] rounded-full mr-3"></span>
-              Markets
+              Store Cards
+            </span>
+          </Link>
+          <Link href="/wao-hotel" onClick={onClose}>
+            <span className="text-xl font-medium block py-4 border-b border-[rgba(255,255,255,0.1)] text-white hover:text-[#FF9500] transition-colors flex items-center">
+              <span className="w-2 h-2 bg-[#FF9500] rounded-full mr-3"></span>
+              WaoHotel
             </span>
           </Link>
           <Link href="/events" onClick={onClose}>

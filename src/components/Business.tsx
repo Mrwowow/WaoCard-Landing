@@ -58,9 +58,9 @@ export default function Business() {
     },
     {
       id: 'store',
-      name: 'Store Cards',
+      name: 'StoreCard',
       icon: <Building2 className="w-6 h-6" />,
-      description: 'Create branded store cards that your customers can add to their WaoCard wallet',
+      description: 'Create branded store card that your customers can add to their WaoCard wallet',
       features: [
         'Customizable branded card design',
         'In-store and online payment options',
